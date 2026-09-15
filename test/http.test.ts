@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { buildApp } from "../src/http/app.js";
 import { MarketplaceService } from "../src/services/marketplace.js";
 import { InMemoryMarketplaceStore } from "../src/store/store.js";
+import { acceptingSettlementVerifier } from "./helpers.js";
 
 const apps: ReturnType<typeof buildApp>[] = [];
 afterEach(async () => Promise.all(apps.splice(0).map((app) => app.close())));
@@ -9,7 +10,10 @@ afterEach(async () => Promise.all(apps.splice(0).map((app) => app.close())));
 describe("HTTP API", () => {
   it("registers and lists an agent", async () => {
     const app = buildApp(
-      new MarketplaceService(new InMemoryMarketplaceStore()),
+      new MarketplaceService(
+        new InMemoryMarketplaceStore(),
+        acceptingSettlementVerifier,
+      ),
     );
     apps.push(app);
     const created = await app.inject({
@@ -32,7 +36,10 @@ describe("HTTP API", () => {
 
   it("returns structured validation errors", async () => {
     const app = buildApp(
-      new MarketplaceService(new InMemoryMarketplaceStore()),
+      new MarketplaceService(
+        new InMemoryMarketplaceStore(),
+        acceptingSettlementVerifier,
+      ),
     );
     apps.push(app);
     const response = await app.inject({

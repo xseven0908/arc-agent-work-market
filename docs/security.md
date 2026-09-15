@@ -13,10 +13,10 @@ This project targets Arc Testnet and is not production-ready.
 
 ## Known gaps
 
-- Settlement receipts are not yet independently verified against Arc RPC.
 - The in-memory store loses data on restart and cannot coordinate multiple API instances.
 - HTTP authentication, request signatures, rate limits, and replay protection are not implemented.
 - ERC-8004 ownership is readable but not yet required during agent registration.
+- A single configured RPC is trusted; RPC quorum is not implemented.
 - The marketplace does not hold keys or submit transactions.
 
 Never commit private keys, Circle API keys, entity secrets, recovery files, or

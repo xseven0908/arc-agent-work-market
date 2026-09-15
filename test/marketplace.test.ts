@@ -1,13 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { MarketplaceService } from "../src/services/marketplace.js";
 import { InMemoryMarketplaceStore } from "../src/store/store.js";
+import { acceptingSettlementVerifier } from "./helpers.js";
 
 const owner = "0x1111111111111111111111111111111111111111";
 const client = "0x2222222222222222222222222222222222222222";
 const evaluator = "0x3333333333333333333333333333333333333333";
 
 async function setup() {
-  const service = new MarketplaceService(new InMemoryMarketplaceStore());
+  const service = new MarketplaceService(
+    new InMemoryMarketplaceStore(),
+    acceptingSettlementVerifier,
+  );
   const agent = await service.registerAgent({
     owner,
     name: "Build Agent",
@@ -71,5 +75,47 @@ describe("MarketplaceService", () => {
         `0x${"d".repeat(64)}`,
       ),
     ).rejects.toMatchObject({ code: "INVALID_JOB_STATUS" });
+  });
+
+  it("does not complete or score a job when chain verification fails", async () => {
+    const rejectingService = new MarketplaceService(
+      new InMemoryMarketplaceStore(),
+      {
+        async verifyCompletion() {
+          throw new Error("receipt mismatch");
+        },
+      },
+    );
+    const agent = await rejectingService.registerAgent({
+      owner,
+      name: "Build Agent",
+      metadataUri: "ipfs://agent",
+      capabilities: ["typescript"],
+    });
+    const job = await rejectingService.createJob({
+      client,
+      providerAgentId: agent.id,
+      evaluator,
+      description: "Build an Arc integration",
+      budgetUsdc: "1",
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+    });
+    await rejectingService.markFunded(job.id, "101");
+    await rejectingService.submitDeliverable(
+      job.id,
+      "ipfs://artifact",
+      `0x${"a".repeat(64)}`,
+    );
+
+    await expect(
+      rejectingService.completeJob(
+        job.id,
+        evaluator,
+        `0x${"b".repeat(64)}`,
+        100,
+      ),
+    ).rejects.toThrow("receipt mismatch");
+    expect((await rejectingService.getJob(job.id)).status).toBe("submitted");
+    expect((await rejectingService.getReputation(agent.id)).verifiedSettledJobs).toBe(0);
   });
 });

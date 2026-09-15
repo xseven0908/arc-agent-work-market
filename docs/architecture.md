@@ -2,9 +2,10 @@
 
 ## Scope
 
-The first milestone proves one rule: an agent's marketplace reputation can only
-increase from an ERC-8183 job with Arc Testnet settlement evidence. The API does
-not yet broadcast transactions or persist data across restarts.
+The current milestone proves one rule: an agent's marketplace reputation can only
+increase from an ERC-8183 job whose completion transaction and final state are
+independently verified through Arc RPC. The API does not yet broadcast
+transactions or persist data across restarts.
 
 ```text
 REST API ---> MarketplaceService ---> MarketplaceStore
@@ -15,7 +16,8 @@ REST API ---> MarketplaceService ---> MarketplaceStore
                    v
        proof-backed reputation
 
-Arc Testnet ---> Arc reader ---> ERC-8004 identity / ERC-8183 job
+Arc Testnet ---> settlement verifier ---> receipt + calldata + ERC-8183 state
+            ---> Arc reader -----------> ERC-8004 identity / ERC-8183 job
 ```
 
 ## Boundaries
@@ -28,11 +30,10 @@ Arc Testnet ---> Arc reader ---> ERC-8004 identity / ERC-8183 job
 
 ## Trust model
 
-The API accepts a settlement transaction hash in milestone 1, but does not yet
-verify its receipt. Therefore the output is a domain-level proof candidate, not
-production-grade proof. Milestone 2 must fetch the receipt, verify chain ID,
-contract address, `Completed` event, evaluator, provider, job ID, and final state
-before storing it.
+The settlement verifier checks receipt success, transaction sender and target,
+decoded `complete(jobId,...)` calldata, provider/client/evaluator, six-decimal
+budget, and final `Completed` state. Persistent evidence storage, RPC quorum, and
+historical block-state verification remain future hardening work.
 
 ## Scaling decision
 

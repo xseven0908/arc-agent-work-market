@@ -6,8 +6,8 @@ The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
 completed with matching Arc settlement evidence can increase reputation**.
 
-> Testnet and development use only. The first milestone does not independently
-> verify transaction receipts and must not be used to make financial or trust decisions.
+> Testnet and development use only. Receipt verification uses one configured RPC
+> and must not yet be used to make production financial or trust decisions.
 
 ## Current milestone
 
@@ -17,6 +17,7 @@ This repository contains a tested domain foundation and read-only Arc integratio
 - Job lifecycle: `open -> funded -> submitted -> completed`.
 - Self-dealing and evaluator checks.
 - Proof-backed reputation and evidence transaction hashes.
+- Independent receipt, calldata, participant, budget, and final-state verification.
 - Arc Testnet contract addresses and Viem ABIs.
 - REST API with strict request validation.
 - Unit/API tests and GitHub Actions CI.

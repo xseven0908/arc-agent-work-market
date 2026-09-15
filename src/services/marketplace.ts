@@ -9,6 +9,7 @@ import type {
   WorkJob,
 } from "../domain/types.js";
 import type { MarketplaceStore } from "../store/store.js";
+import type { SettlementVerifier } from "./settlement-verifier.js";
 
 export interface RegisterAgentInput {
   owner: Address;
@@ -29,7 +30,10 @@ export interface CreateJobInput {
 }
 
 export class MarketplaceService {
-  constructor(private readonly store: MarketplaceStore) {}
+  constructor(
+    private readonly store: MarketplaceStore,
+    private readonly settlementVerifier: SettlementVerifier,
+  ) {}
 
   async registerAgent(input: RegisterAgentInput): Promise<AgentProfile> {
     const now = new Date().toISOString();
@@ -128,15 +132,17 @@ export class MarketplaceService {
       );
     }
 
-    const completedAt = new Date().toISOString();
-    const settlement: SettlementProof = {
-      chainId: 5042002,
-      contractAddress: "0x0747EEf0706327138c69792bF28Cd525089e4583",
-      chainJobId: job.chainJobId,
-      transactionHash,
-      evaluator,
-      completedAt,
-    };
+    const agent = await this.requireAgent(job.providerAgentId);
+    const settlement: SettlementProof =
+      await this.settlementVerifier.verifyCompletion({
+        chainJobId: job.chainJobId,
+        transactionHash,
+        client: job.client,
+        provider: agent.owner,
+        evaluator,
+        budgetUsdc: job.budgetUsdc,
+      });
+    const completedAt = settlement.completedAt;
     job.status = "completed";
     job.settlement = settlement;
     job.evaluatorScore = score;

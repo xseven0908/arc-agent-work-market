@@ -13,8 +13,8 @@
 ## Milestone 2 — Verify, do not trust
 
 - [ ] Verify ERC-8004 identity ownership during registration
-- [ ] Decode ERC-8183 job and completion events from transaction receipts
-- [ ] Require the onchain provider to match the registered agent owner
+- [x] Verify receipt success and decode the expected `complete(jobId,...)` call
+- [x] Require onchain client, provider, evaluator, budget, and final state to match
 - [ ] Store immutable evidence records in PostgreSQL
 - [ ] Add idempotency keys and replay protection
 
