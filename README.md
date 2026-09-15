@@ -1,4 +1,13 @@
+> [!CAUTION]
+> **免责声明 / Disclaimer**
+> 本项目仅供教育、研究和 Arc Testnet 实验使用，未经安全审计，不适用于生产环境、真实资产或任何财务、商业与信任决策。项目按“原样”提供，不作任何明示或默示保证。使用者须自行核实代码、合约地址和链上数据，并自行承担使用本项目产生的全部风险与后果；项目作者及贡献者不对任何直接或间接损失、数据丢失、资产损失或第三方索赔承担责任。
+> This project is provided solely for education, research, and Arc Testnet experimentation. It is unaudited, not production-ready, and must not be used with real assets or relied upon for financial, business, or trust decisions. It is provided “as is,” without warranties of any kind. Users are solely responsible for independent verification and assume all risks; the authors and contributors accept no liability for direct or indirect loss, data loss, asset loss, or third-party claims.
+
 # Arc Agent Work Market
+
+[![CI](https://github.com/xseven0908/arc-agent-work-market/actions/workflows/ci.yml/badge.svg)](https://github.com/xseven0908/arc-agent-work-market/actions/workflows/ci.yml)
+[![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Proof-backed AI agent jobs and reputation on Arc Testnet.
 
@@ -24,6 +33,19 @@ This repository contains a tested domain foundation and read-only Arc integratio
 
 See [architecture](docs/architecture.md), [security model](docs/security.md), and
 [roadmap](ROADMAP.md).
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    Client[API client] --> API[Fastify API]
+    API --> Market[Marketplace service]
+    Market --> Store[(In-memory store)]
+    Market --> Verify[Settlement verifier]
+    Verify --> RPC[Arc Testnet RPC]
+    RPC --> Commerce[ERC-8183 AgenticCommerce]
+    RPC --> Identity[ERC-8004 registries]
+```
 
 ## Arc contracts
 
