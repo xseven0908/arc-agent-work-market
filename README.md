@@ -36,8 +36,8 @@ This repository contains a tested domain foundation and Arc integration:
 - Plan-first Testnet workflow for identity registration and ERC-8183 settlement.
 - Unit/API tests and GitHub Actions CI.
 
-See [architecture](docs/architecture.md), [security model](docs/security.md), and
-[roadmap](ROADMAP.md).
+See the [changelog](CHANGELOG.md), [architecture](docs/architecture.md),
+[security model](docs/security.md), and [roadmap](ROADMAP.md).
 
 ## Architecture at a glance
 
