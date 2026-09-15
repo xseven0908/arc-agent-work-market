@@ -17,7 +17,8 @@ Browser/API ---> MarketplaceService ---> MarketplaceStore
        proof-backed reputation
 
 Arc Testnet ---> settlement verifier ---> receipt + calldata + ERC-8183 state
-            ---> Arc reader -----------> ERC-8004 identity / ERC-8183 job
+            ---> identity verifier -----> ERC-8004 ownerOf + tokenURI
+            ---> Arc reader ------------> ERC-8004 identity / ERC-8183 job
 
 operator review ---> guarded workflow script ---> wallet clients ---> Arc Testnet
 ```
@@ -32,6 +33,11 @@ operator review ---> guarded workflow script ---> wallet clients ---> Arc Testne
 - `scripts/`: explicit operator-run Testnet transaction workflow.
 
 ## Trust model
+
+The identity verifier fails closed when an ERC-8004 ID is supplied: both the owner
+address and case-sensitive metadata URI must match current IdentityRegistry state.
+The resulting proof records the Arc chain ID, registry address, canonical identity
+fields, and verification timestamp.
 
 The settlement verifier checks receipt success, transaction sender and target,
 decoded `complete(jobId,...)` calldata, provider/client/evaluator, six-decimal

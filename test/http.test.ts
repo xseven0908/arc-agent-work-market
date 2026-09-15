@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { buildApp } from "../src/http/app.js";
 import { MarketplaceService } from "../src/services/marketplace.js";
 import { InMemoryMarketplaceStore } from "../src/store/store.js";
-import { acceptingSettlementVerifier } from "./helpers.js";
+import {
+  acceptingAgentIdentityVerifier,
+  acceptingSettlementVerifier,
+} from "./helpers.js";
 
 const apps: ReturnType<typeof buildApp>[] = [];
 afterEach(async () => Promise.all(apps.splice(0).map((app) => app.close())));
@@ -13,6 +16,7 @@ describe("HTTP API", () => {
       new MarketplaceService(
         new InMemoryMarketplaceStore(),
         acceptingSettlementVerifier,
+        acceptingAgentIdentityVerifier,
       ),
     );
     apps.push(app);
@@ -39,6 +43,7 @@ describe("HTTP API", () => {
       new MarketplaceService(
         new InMemoryMarketplaceStore(),
         acceptingSettlementVerifier,
+        acceptingAgentIdentityVerifier,
       ),
     );
     apps.push(app);
@@ -56,6 +61,7 @@ describe("HTTP API", () => {
       new MarketplaceService(
         new InMemoryMarketplaceStore(),
         acceptingSettlementVerifier,
+        acceptingAgentIdentityVerifier,
       ),
     );
     apps.push(app);

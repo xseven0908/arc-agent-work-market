@@ -12,11 +12,56 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Planned
 
-- Verify ERC-8004 ownership when an agent is registered through the API.
 - Add authenticated HTTP requests and idempotency keys.
 - Index job and reputation events from block checkpoints.
 - Add a Circle Developer-Controlled Wallet adapter.
 - Publish a manually verified Arc Testnet evidence artifact.
+
+## [0.3.0] - 2026-09-15
+
+### Added
+
+- Arc ERC-8004 identity verifier backed by the official IdentityRegistry.
+- Mandatory `ownerOf(agentId)` and `tokenURI(agentId)` checks whenever
+  `erc8004AgentId` is supplied during agent registration.
+- Stored identity proof containing chain ID, registry address, agent ID, owner,
+  metadata URI, and verification timestamp.
+- Dashboard indicator distinguishing onchain-verified identities from unlinked
+  local profiles.
+- Tests proving verified identity evidence is saved and failed verification cannot
+  create an agent profile.
+- Focused proof-builder tests for valid identity evidence, owner mismatch, and
+  metadata mismatch.
+
+### Changed
+
+- Advanced the package minor version to `0.3.0`.
+- `POST /agents` now fails closed when a supplied ERC-8004 identity cannot be
+  resolved or does not exactly match both the submitted owner and metadata URI.
+- The chain-specific verifier is injected behind an application service interface,
+  keeping unit tests and future chain adapters independent from Arc RPC.
+
+### Security
+
+- Prevents a caller from claiming another wallet's ERC-8004 identity.
+- Prevents a caller from attaching local metadata that differs from the identity's
+  canonical onchain token URI.
+- Profiles without an ERC-8004 ID remain permitted but carry no identity proof and
+  are visibly unverified.
+
+### Verification
+
+- TypeScript strict typecheck and build: passed locally.
+- Test suite: 16 tests across five files, passed locally.
+- GitHub Actions: passed after synchronization and before release publication.
+- Real Testnet transactions broadcast in this release: **none**.
+
+### Known limitations
+
+- Identity proof is a point-in-time verification. The service does not yet refresh
+  profiles after a later ERC-8004 ownership transfer or metadata update.
+- Registration currently trusts one configured Arc RPC endpoint.
+- Metadata URI comparison is deliberately exact and case-sensitive.
 
 ## [0.2.1] - 2026-09-15
 
@@ -149,7 +194,8 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `757dab6` — `feat: verify ERC-8183 settlements before scoring reputation`
 - `e569103` — `docs: add prominent disclaimer and project overview`
 
-[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/xseven0908/arc-agent-work-market/releases/tag/v0.1.0

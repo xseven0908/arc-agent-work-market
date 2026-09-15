@@ -14,7 +14,17 @@ export interface AgentProfile {
   metadataUri: string;
   capabilities: string[];
   erc8004AgentId?: string;
+  identityProof?: AgentIdentityProof;
   createdAt: string;
+}
+
+export interface AgentIdentityProof {
+  chainId: 5042002;
+  registryAddress: Address;
+  agentId: string;
+  owner: Address;
+  metadataUri: string;
+  verifiedAt: string;
 }
 
 export interface Deliverable {

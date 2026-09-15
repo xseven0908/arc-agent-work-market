@@ -1,4 +1,19 @@
 import type { SettlementVerifier } from "../src/services/settlement-verifier.js";
+import type { AgentIdentityVerifier } from "../src/services/agent-identity-verifier.js";
+import { ARC_CONTRACTS } from "../src/chain/arc.js";
+
+export const acceptingAgentIdentityVerifier: AgentIdentityVerifier = {
+  async verifyIdentity(input) {
+    return {
+      chainId: 5042002,
+      registryAddress: ARC_CONTRACTS.identityRegistry,
+      agentId: input.agentId,
+      owner: input.owner,
+      metadataUri: input.metadataUri,
+      verifiedAt: "2026-09-15T00:00:00.000Z",
+    };
+  },
+};
 
 export const acceptingSettlementVerifier: SettlementVerifier = {
   async verifyCompletion(input) {

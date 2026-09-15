@@ -9,6 +9,7 @@ import type {
   WorkJob,
 } from "../domain/types.js";
 import type { MarketplaceStore } from "../store/store.js";
+import type { AgentIdentityVerifier } from "./agent-identity-verifier.js";
 import type { SettlementVerifier } from "./settlement-verifier.js";
 
 export interface RegisterAgentInput {
@@ -33,10 +34,25 @@ export class MarketplaceService {
   constructor(
     private readonly store: MarketplaceStore,
     private readonly settlementVerifier: SettlementVerifier,
+    private readonly identityVerifier?: AgentIdentityVerifier,
   ) {}
 
   async registerAgent(input: RegisterAgentInput): Promise<AgentProfile> {
     const now = new Date().toISOString();
+    let identityProof;
+    if (input.erc8004AgentId) {
+      if (!this.identityVerifier) {
+        throw new DomainError(
+          "ERC-8004 identity verification is not configured",
+          "IDENTITY_VERIFIER_UNAVAILABLE",
+        );
+      }
+      identityProof = await this.identityVerifier.verifyIdentity({
+        agentId: input.erc8004AgentId,
+        owner: input.owner,
+        metadataUri: input.metadataUri,
+      });
+    }
     const agent: AgentProfile = {
       id: randomUUID(),
       owner: input.owner,
@@ -46,6 +62,7 @@ export class MarketplaceService {
       ...(input.erc8004AgentId
         ? { erc8004AgentId: input.erc8004AgentId }
         : {}),
+      ...(identityProof ? { identityProof } : {}),
       createdAt: now,
     };
     await this.store.saveAgent(agent);

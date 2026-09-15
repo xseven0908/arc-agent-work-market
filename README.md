@@ -9,9 +9,9 @@
 [![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.2 adds
-durable SQLite storage, a read-only demo UI, replay-resistant evidence storage,
-and a guarded end-to-end ERC-8183 execution script.
+Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.3 adds
+mandatory onchain ownership and metadata verification whenever a local profile is
+linked to an ERC-8004 agent ID.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -25,6 +25,8 @@ completed with matching Arc settlement evidence can increase reputation**.
 This repository contains a tested domain foundation and Arc integration:
 
 - Agent profiles linked to optional ERC-8004 IDs.
+- Onchain `ownerOf` and `tokenURI` verification for every linked ERC-8004 ID.
+- Stored identity proof with chain, registry, owner, metadata, and verification time.
 - Job lifecycle: `open -> funded -> submitted -> completed`.
 - Self-dealing and evaluator checks.
 - Proof-backed reputation and evidence transaction hashes.
@@ -101,6 +103,11 @@ attempted unless `EXECUTE_TESTNET=true` is explicitly set. Private keys are neve
 written to the evidence artifact or logged by the script.
 
 ## API
+
+When `erc8004AgentId` is included in `POST /agents`, the submitted `owner` and
+`metadataUri` must exactly match Arc IdentityRegistry state. Registration fails
+closed if RPC verification cannot complete. Profiles without an ERC-8004 link can
+still be created for local experimentation and are shown as unverified.
 
 - `POST /agents`
 - `GET /agents`

@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { MarketplaceService } from "../src/services/marketplace.js";
 import { InMemoryMarketplaceStore } from "../src/store/store.js";
-import { acceptingSettlementVerifier } from "./helpers.js";
+import {
+  acceptingAgentIdentityVerifier,
+  acceptingSettlementVerifier,
+} from "./helpers.js";
 
 const owner = "0x1111111111111111111111111111111111111111";
 const client = "0x2222222222222222222222222222222222222222";
@@ -11,6 +14,7 @@ async function setup() {
   const service = new MarketplaceService(
     new InMemoryMarketplaceStore(),
     acceptingSettlementVerifier,
+    acceptingAgentIdentityVerifier,
   );
   const agent = await service.registerAgent({
     owner,
@@ -47,6 +51,11 @@ describe("MarketplaceService", () => {
     );
 
     const reputation = await service.getReputation(agent.id);
+    expect(agent.identityProof).toMatchObject({
+      agentId: "9",
+      owner,
+      metadataUri: "ipfs://agent",
+    });
     expect(reputation.verifiedSettledJobs).toBe(1);
     expect(reputation.settledVolumeUsdc).toBe("12.5");
     expect(reputation.score).toBe(66);
@@ -64,6 +73,29 @@ describe("MarketplaceService", () => {
         expiresAt: new Date(Date.now() + 60_000).toISOString(),
       }),
     ).rejects.toMatchObject({ code: "SELF_DEALING" });
+  });
+
+  it("rejects an ERC-8004 identity that is not owned by the supplied owner", async () => {
+    const service = new MarketplaceService(
+      new InMemoryMarketplaceStore(),
+      acceptingSettlementVerifier,
+      {
+        async verifyIdentity() {
+          throw new Error("owner mismatch");
+        },
+      },
+    );
+
+    await expect(
+      service.registerAgent({
+        owner,
+        name: "Impersonated Agent",
+        metadataUri: "ipfs://agent",
+        capabilities: ["typescript"],
+        erc8004AgentId: "9",
+      }),
+    ).rejects.toThrow("owner mismatch");
+    expect(await service.listAgents()).toEqual([]);
   });
 
   it("enforces the job state machine", async () => {

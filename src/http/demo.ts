@@ -68,7 +68,7 @@ export const demoHtml = `<!doctype html>
         document.querySelector('#job-count').textContent = jobs.length;
         document.querySelector('#settled-count').textContent = jobs.filter((job) => job.settlement).length;
         document.querySelector('#agents').innerHTML = agents.length ? agents.map((agent) =>
-          '<p><strong>' + escapeHtml(agent.name) + '</strong><br><span class="muted">' + escapeHtml(agent.capabilities.join(', ') || 'No capabilities') + '</span><br><span class="muted">ERC-8004: ' + escapeHtml(agent.erc8004AgentId || 'not linked') + '</span></p>'
+          '<p><strong>' + escapeHtml(agent.name) + '</strong><br><span class="muted">' + escapeHtml(agent.capabilities.join(', ') || 'No capabilities') + '</span><br><span class="muted">ERC-8004: ' + escapeHtml(agent.erc8004AgentId || 'not linked') + (agent.identityProof ? ' · verified onchain' : '') + '</span></p>'
         ).join('') : '<div class="empty">No agents registered yet.</div>';
         document.querySelector('#jobs').innerHTML = jobs.length ? '<table><thead><tr><th>Description</th><th>Status</th><th>Budget</th><th>Evidence</th></tr></thead><tbody>' + jobs.map((job) => {
           const evidence = job.settlement ? '<a target="_blank" rel="noreferrer" href="https://testnet.arcscan.app/tx/' + encodeURIComponent(job.settlement.transactionHash) + '">' + short(job.settlement.transactionHash) + '</a>' : '—';
