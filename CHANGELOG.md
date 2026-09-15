@@ -10,12 +10,6 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
-
-- Project-level changelog covering functional updates, security changes,
-  verification results, known limitations, and commit references for every sync.
-- Direct README link to this changelog.
-
 ### Planned
 
 - Verify ERC-8004 ownership when an agent is registered through the API.
@@ -23,6 +17,33 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Index job and reputation events from block checkpoints.
 - Add a Circle Developer-Controlled Wallet adapter.
 - Publish a manually verified Arc Testnet evidence artifact.
+
+## [0.2.1] - 2026-09-15
+
+### Added
+
+- Project-level changelog covering functional updates, security changes,
+  verification results, known limitations, and commit references for every sync.
+- Direct README link to this changelog.
+
+### Changed
+
+- Upgraded CI from `actions/checkout@v4` to `actions/checkout@v7`.
+- Upgraded CI from `actions/setup-node@v4` to `actions/setup-node@v7`.
+- Advanced the package patch version to `0.2.1`.
+
+### Verification
+
+- TypeScript strict typecheck, 12 tests, and build: passed locally.
+- GitHub Actions: passed after synchronization; the prior deprecated Node action
+  runtime annotation is no longer emitted.
+- Runtime features and public API behavior: unchanged.
+- Real Testnet transactions broadcast in this release: **none**.
+
+### Known limitations
+
+- This patch updates CI and release documentation only. The v0.2.0 application
+  limitations remain unchanged.
 
 ## [0.2.0] - 2026-09-15
 
@@ -128,6 +149,7 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `757dab6` — `feat: verify ERC-8183 settlements before scoring reputation`
 - `e569103` — `docs: add prominent disclaimer and project overview`
 
-[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/xseven0908/arc-agent-work-market/releases/tag/v0.1.0
