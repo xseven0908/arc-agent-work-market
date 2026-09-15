@@ -50,4 +50,23 @@ describe("HTTP API", () => {
     expect(response.statusCode).toBe(400);
     expect(response.json().error).toBe("VALIDATION_ERROR");
   });
+
+  it("serves the read-only demo and job collection", async () => {
+    const app = buildApp(
+      new MarketplaceService(
+        new InMemoryMarketplaceStore(),
+        acceptingSettlementVerifier,
+      ),
+    );
+    apps.push(app);
+    const demo = await app.inject({ method: "GET", url: "/" });
+    const jobs = await app.inject({ method: "GET", url: "/jobs" });
+
+    expect(demo.statusCode).toBe(200);
+    expect(demo.headers["content-type"]).toContain("text/html");
+    expect(demo.body).toContain("Proof-backed agent work");
+    expect(demo.body).toContain("Experimental software");
+    expect(jobs.statusCode).toBe(200);
+    expect(jobs.json()).toEqual([]);
+  });
 });

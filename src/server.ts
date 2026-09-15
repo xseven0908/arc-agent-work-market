@@ -1,10 +1,11 @@
 import { buildApp } from "./http/app.js";
 import { createArcSettlementVerifier } from "./chain/settlement-verifier.js";
 import { MarketplaceService } from "./services/marketplace.js";
-import { InMemoryMarketplaceStore } from "./store/store.js";
+import { SqliteMarketplaceStore } from "./store/sqlite-store.js";
 
+const databasePath = process.env.DATABASE_PATH ?? "data/marketplace.db";
 const service = new MarketplaceService(
-  new InMemoryMarketplaceStore(),
+  new SqliteMarketplaceStore(databasePath),
   createArcSettlementVerifier(),
 );
 const app = buildApp(service);

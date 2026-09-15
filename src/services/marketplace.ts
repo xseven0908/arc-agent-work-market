@@ -155,6 +155,10 @@ export class MarketplaceService {
     return this.requireJob(id);
   }
 
+  async listJobs(): Promise<WorkJob[]> {
+    return this.store.listJobs();
+  }
+
   async getReputation(agentId: string): Promise<AgentReputation> {
     const agent = await this.requireAgent(agentId);
     const jobs = await this.store.listJobsForAgent(agentId);

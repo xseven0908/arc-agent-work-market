@@ -9,10 +9,14 @@ import {
   registerAgentSchema,
   submitJobSchema,
 } from "./schemas.js";
+import { demoHtml } from "./demo.js";
 
 export function buildApp(service: MarketplaceService) {
   const app = Fastify({ logger: false });
 
+  app.get("/", async (_request, reply) =>
+    reply.type("text/html; charset=utf-8").send(demoHtml),
+  );
   app.get("/health", async () => ({ status: "ok", chainId: 5042002 }));
 
   app.get("/agents", async () => service.listAgents());
@@ -28,6 +32,7 @@ export function buildApp(service: MarketplaceService) {
     const job = await service.createJob(createJobSchema.parse(request.body));
     return reply.code(201).send(job);
   });
+  app.get("/jobs", async () => service.listJobs());
   app.get<{ Params: { id: string } }>("/jobs/:id", async (request) =>
     service.getJob(request.params.id),
   );

@@ -6,6 +6,7 @@ export interface MarketplaceStore {
   listAgents(): Promise<AgentProfile[]>;
   saveJob(job: WorkJob): Promise<void>;
   getJob(id: string): Promise<WorkJob | undefined>;
+  listJobs(): Promise<WorkJob[]>;
   listJobsForAgent(agentId: string): Promise<WorkJob[]>;
 }
 
@@ -33,6 +34,10 @@ export class InMemoryMarketplaceStore implements MarketplaceStore {
   async getJob(id: string): Promise<WorkJob | undefined> {
     const job = this.jobs.get(id);
     return job ? structuredClone(job) : undefined;
+  }
+
+  async listJobs(): Promise<WorkJob[]> {
+    return [...this.jobs.values()].map((job) => structuredClone(job));
   }
 
   async listJobsForAgent(agentId: string): Promise<WorkJob[]> {
