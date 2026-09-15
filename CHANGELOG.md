@@ -17,6 +17,52 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add a Circle Developer-Controlled Wallet adapter.
 - Publish a manually verified Arc Testnet evidence artifact.
 
+## [0.4.0] - 2026-09-15
+
+### Added
+
+- Manual `POST /agents/:id/identity/refresh` endpoint.
+- Automatic ERC-8004 owner and metadata revalidation before every new job for a
+  linked provider agent.
+- Separate `verified`, `invalid`, and `unavailable` identity states with last-check
+  timestamps and machine-readable failure codes.
+- Dashboard visibility for the current identity state.
+- Tests covering successful manual refresh, ownership transfer invalidation, RPC
+  unavailability, preserved historical proof, and blocked job creation.
+- SQLite restart test proving invalid identity state and the last valid proof both
+  persist durably.
+
+### Changed
+
+- Advanced the package minor version to `0.4.0`.
+- Linked agents now incur an Arc IdentityRegistry read before accepting each job.
+- Identity lookup failures return HTTP 503; ownership or metadata mismatches remain
+  conflict responses.
+
+### Security
+
+- A transferred ERC-8004 identity can no longer continue accepting jobs under its
+  previous local owner.
+- Metadata changes invalidate the prior trust state until the local profile is
+  reconciled.
+- Transient RPC failure fails closed for new jobs without deleting the last known
+  valid proof.
+
+### Verification
+
+- TypeScript strict typecheck and build: passed locally.
+- Test suite: 19 tests across five files, passed locally.
+- GitHub Actions: passed after synchronization and before release publication.
+- Real Testnet transactions broadcast in this release: **none**.
+
+### Known limitations
+
+- Revalidation adds RPC latency and currently trusts one configured endpoint.
+- Registry state can theoretically change between the verification read and the
+  following local write or job creation.
+- There is no scheduled background refresh yet; refresh happens on demand and in
+  the job-creation path.
+
 ## [0.3.0] - 2026-09-15
 
 ### Added
@@ -194,7 +240,8 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `757dab6` — `feat: verify ERC-8183 settlements before scoring reputation`
 - `e569103` — `docs: add prominent disclaimer and project overview`
 
-[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.1.0...v0.2.0

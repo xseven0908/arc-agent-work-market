@@ -78,7 +78,7 @@ export function createArcAgentIdentityVerifier(
       } catch {
         throw new DomainError(
           "unable to resolve the ERC-8004 identity on Arc Testnet",
-          "INVALID_IDENTITY",
+          "IDENTITY_LOOKUP_FAILED",
         );
       }
 

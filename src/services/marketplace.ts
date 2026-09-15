@@ -63,6 +63,12 @@ export class MarketplaceService {
         ? { erc8004AgentId: input.erc8004AgentId }
         : {}),
       ...(identityProof ? { identityProof } : {}),
+      ...(identityProof
+        ? {
+            identityStatus: "verified" as const,
+            identityLastCheckedAt: identityProof.verifiedAt,
+          }
+        : {}),
       createdAt: now,
     };
     await this.store.saveAgent(agent);
@@ -74,7 +80,10 @@ export class MarketplaceService {
   }
 
   async createJob(input: CreateJobInput): Promise<WorkJob> {
-    const agent = await this.requireAgent(input.providerAgentId);
+    let agent = await this.requireAgent(input.providerAgentId);
+    if (agent.erc8004AgentId) {
+      agent = await this.refreshAgentIdentity(agent.id);
+    }
     if (agent.owner.toLowerCase() === input.client.toLowerCase()) {
       throw new DomainError(
         "client and provider owner must be different",
@@ -174,6 +183,54 @@ export class MarketplaceService {
 
   async listJobs(): Promise<WorkJob[]> {
     return this.store.listJobs();
+  }
+
+  async refreshAgentIdentity(id: string): Promise<AgentProfile> {
+    const agent = await this.requireAgent(id);
+    if (!agent.erc8004AgentId) {
+      throw new DomainError(
+        "agent is not linked to an ERC-8004 identity",
+        "IDENTITY_NOT_LINKED",
+      );
+    }
+    if (!this.identityVerifier) {
+      throw new DomainError(
+        "ERC-8004 identity verification is not configured",
+        "IDENTITY_VERIFIER_UNAVAILABLE",
+      );
+    }
+
+    try {
+      const identityProof = await this.identityVerifier.verifyIdentity({
+        agentId: agent.erc8004AgentId,
+        owner: agent.owner,
+        metadataUri: agent.metadataUri,
+      });
+      const refreshed: AgentProfile = {
+        ...agent,
+        identityProof,
+        identityStatus: "verified",
+        identityLastCheckedAt: identityProof.verifiedAt,
+      };
+      delete refreshed.identityFailureCode;
+      await this.store.saveAgent(refreshed);
+      return refreshed;
+    } catch (error) {
+      const code = error instanceof DomainError ? error.code : "IDENTITY_LOOKUP_FAILED";
+      const identityStatus =
+        code === "IDENTITY_OWNER_MISMATCH" ||
+        code === "IDENTITY_METADATA_MISMATCH"
+          ? "invalid"
+          : "unavailable";
+      const failed: AgentProfile = {
+        ...agent,
+        identityStatus,
+        identityLastCheckedAt: new Date().toISOString(),
+        identityFailureCode: code,
+      };
+      await this.store.saveAgent(failed);
+      throw error;
+    }
   }
 
   async getReputation(agentId: string): Promise<AgentReputation> {

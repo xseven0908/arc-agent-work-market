@@ -15,6 +15,9 @@ export interface AgentProfile {
   capabilities: string[];
   erc8004AgentId?: string;
   identityProof?: AgentIdentityProof;
+  identityStatus?: "verified" | "invalid" | "unavailable";
+  identityLastCheckedAt?: string;
+  identityFailureCode?: string;
   createdAt: string;
 }
 

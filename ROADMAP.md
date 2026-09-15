@@ -13,6 +13,7 @@
 ## Milestone 2 — Verify, do not trust
 
 - [x] Verify ERC-8004 identity ownership and metadata during registration
+- [x] Refresh linked identities before accepting jobs and expose manual refresh
 - [x] Verify receipt success and decode the expected `complete(jobId,...)` call
 - [x] Require onchain client, provider, evaluator, budget, and final state to match
 - [x] Store durable evidence records in SQLite

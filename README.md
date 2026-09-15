@@ -9,9 +9,9 @@
 [![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.3 adds
-mandatory onchain ownership and metadata verification whenever a local profile is
-linked to an ERC-8004 agent ID.
+Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.4 revalidates
+linked ERC-8004 identities before accepting new jobs and exposes a manual refresh
+endpoint, preventing stale ownership or metadata proofs from remaining trusted.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -27,6 +27,8 @@ This repository contains a tested domain foundation and Arc integration:
 - Agent profiles linked to optional ERC-8004 IDs.
 - Onchain `ownerOf` and `tokenURI` verification for every linked ERC-8004 ID.
 - Stored identity proof with chain, registry, owner, metadata, and verification time.
+- Automatic identity refresh before each linked agent accepts a new job.
+- Explicit `verified`, `invalid`, and `unavailable` identity states.
 - Job lifecycle: `open -> funded -> submitted -> completed`.
 - Self-dealing and evaluator checks.
 - Proof-backed reputation and evidence transaction hashes.
@@ -109,8 +111,14 @@ When `erc8004AgentId` is included in `POST /agents`, the submitted `owner` and
 closed if RPC verification cannot complete. Profiles without an ERC-8004 link can
 still be created for local experimentation and are shown as unverified.
 
+Linked identities are checked again during `POST /jobs`. A transferred identity,
+changed metadata URI, or unavailable verification path blocks new job creation.
+The last successful proof is retained for audit history, while the current status
+is exposed separately.
+
 - `POST /agents`
 - `GET /agents`
+- `POST /agents/:id/identity/refresh`
 - `GET /agents/:id/reputation`
 - `POST /jobs`
 - `GET /jobs`

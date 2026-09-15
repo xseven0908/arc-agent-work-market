@@ -27,6 +27,10 @@ export function buildApp(service: MarketplaceService) {
   app.get<{ Params: { id: string } }>("/agents/:id/reputation", async (request) =>
     service.getReputation(request.params.id),
   );
+  app.post<{ Params: { id: string } }>(
+    "/agents/:id/identity/refresh",
+    async (request) => service.refreshAgentIdentity(request.params.id),
+  );
 
   app.post("/jobs", async (request, reply) => {
     const job = await service.createJob(createJobSchema.parse(request.body));
@@ -66,6 +70,12 @@ export function buildApp(service: MarketplaceService) {
       });
     }
     if (error instanceof DomainError) {
+      if (
+        error.code === "IDENTITY_LOOKUP_FAILED" ||
+        error.code === "IDENTITY_VERIFIER_UNAVAILABLE"
+      ) {
+        return reply.code(503).send({ error: error.code, message: error.message });
+      }
       const status = error.code.endsWith("NOT_FOUND") ? 404 : 409;
       return reply.code(status).send({ error: error.code, message: error.message });
     }

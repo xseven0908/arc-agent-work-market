@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DomainError } from "../src/domain/errors.js";
 import { MarketplaceService } from "../src/services/marketplace.js";
 import { InMemoryMarketplaceStore } from "../src/store/store.js";
 import {
@@ -96,6 +97,78 @@ describe("MarketplaceService", () => {
       }),
     ).rejects.toThrow("owner mismatch");
     expect(await service.listAgents()).toEqual([]);
+  });
+
+  it("invalidates a transferred identity before accepting a new job", async () => {
+    let verificationCount = 0;
+    const service = new MarketplaceService(
+      new InMemoryMarketplaceStore(),
+      acceptingSettlementVerifier,
+      {
+        async verifyIdentity(input) {
+          verificationCount += 1;
+          if (verificationCount > 1) {
+            throw new DomainError(
+              "the supplied owner does not own this ERC-8004 identity",
+              "IDENTITY_OWNER_MISMATCH",
+            );
+          }
+          return acceptingAgentIdentityVerifier.verifyIdentity(input);
+        },
+      },
+    );
+    const agent = await service.registerAgent({
+      owner,
+      name: "Transferred Agent",
+      metadataUri: "ipfs://transferred-agent",
+      capabilities: ["typescript"],
+      erc8004AgentId: "10",
+    });
+
+    await expect(
+      service.createJob({
+        client,
+        providerAgentId: agent.id,
+        evaluator,
+        description: "Must not be created",
+        budgetUsdc: "1",
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      }),
+    ).rejects.toMatchObject({ code: "IDENTITY_OWNER_MISMATCH" });
+    expect((await service.listAgents())[0]).toMatchObject({
+      identityStatus: "invalid",
+      identityFailureCode: "IDENTITY_OWNER_MISMATCH",
+    });
+  });
+
+  it("marks an identity unavailable without deleting its last proof", async () => {
+    let verificationCount = 0;
+    const service = new MarketplaceService(
+      new InMemoryMarketplaceStore(),
+      acceptingSettlementVerifier,
+      {
+        async verifyIdentity(input) {
+          verificationCount += 1;
+          if (verificationCount > 1) throw new Error("RPC unavailable");
+          return acceptingAgentIdentityVerifier.verifyIdentity(input);
+        },
+      },
+    );
+    const agent = await service.registerAgent({
+      owner,
+      name: "Temporarily Unavailable Agent",
+      metadataUri: "ipfs://unavailable-agent",
+      capabilities: ["typescript"],
+      erc8004AgentId: "11",
+    });
+
+    await expect(service.refreshAgentIdentity(agent.id)).rejects.toThrow("RPC unavailable");
+    const stored = (await service.listAgents())[0];
+    expect(stored).toMatchObject({
+      identityStatus: "unavailable",
+      identityFailureCode: "IDENTITY_LOOKUP_FAILED",
+    });
+    expect(stored?.identityProof?.agentId).toBe("11");
   });
 
   it("enforces the job state machine", async () => {

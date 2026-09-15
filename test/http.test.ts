@@ -32,6 +32,12 @@ describe("HTTP API", () => {
       },
     });
     expect(created.statusCode).toBe(201);
+    const refreshed = await app.inject({
+      method: "POST",
+      url: `/agents/${created.json().id}/identity/refresh`,
+    });
+    expect(refreshed.statusCode).toBe(200);
+    expect(refreshed.json().identityStatus).toBe("verified");
 
     const listed = await app.inject({ method: "GET", url: "/agents" });
     expect(listed.statusCode).toBe(200);

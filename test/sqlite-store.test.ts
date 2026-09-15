@@ -2,12 +2,16 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { DomainError } from "../src/domain/errors.js";
 import {
   MarketplaceService,
   type CreateJobInput,
 } from "../src/services/marketplace.js";
 import { SqliteMarketplaceStore } from "../src/store/sqlite-store.js";
-import { acceptingSettlementVerifier } from "./helpers.js";
+import {
+  acceptingAgentIdentityVerifier,
+  acceptingSettlementVerifier,
+} from "./helpers.js";
 
 const temporaryDirectories: string[] = [];
 afterEach(() => {
@@ -53,6 +57,45 @@ describe("SqliteMarketplaceStore", () => {
     expect((await secondService.listAgents())[0]?.name).toBe("Persistent Agent");
     expect((await secondService.getJob(job.id)).chainJobId).toBe("500");
     expect(await secondService.listJobs()).toHaveLength(1);
+    secondStore.close();
+  });
+
+  it("persists an invalidated identity state across restarts", async () => {
+    const path = databasePath();
+    const firstStore = new SqliteMarketplaceStore(path);
+    const registrationService = new MarketplaceService(
+      firstStore,
+      acceptingSettlementVerifier,
+      acceptingAgentIdentityVerifier,
+    );
+    const agent = await registrationService.registerAgent({
+      owner,
+      name: "Transferred Persistent Agent",
+      metadataUri: "ipfs://transferred-persistent-agent",
+      capabilities: ["research"],
+      erc8004AgentId: "99",
+    });
+    const refreshService = new MarketplaceService(
+      firstStore,
+      acceptingSettlementVerifier,
+      {
+        async verifyIdentity() {
+          throw new DomainError("owner changed", "IDENTITY_OWNER_MISMATCH");
+        },
+      },
+    );
+    await expect(refreshService.refreshAgentIdentity(agent.id)).rejects.toThrow(
+      "owner changed",
+    );
+    firstStore.close();
+
+    const secondStore = new SqliteMarketplaceStore(path);
+    const stored = await secondStore.getAgent(agent.id);
+    expect(stored).toMatchObject({
+      identityStatus: "invalid",
+      identityFailureCode: "IDENTITY_OWNER_MISMATCH",
+    });
+    expect(stored?.identityProof?.agentId).toBe("99");
     secondStore.close();
   });
 

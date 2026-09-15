@@ -39,6 +39,11 @@ address and case-sensitive metadata URI must match current IdentityRegistry stat
 The resulting proof records the Arc chain ID, registry address, canonical identity
 fields, and verification timestamp.
 
+The service repeats this verification before every new job for a linked agent and
+through an explicit refresh endpoint. Ownership or metadata mismatch changes the
+profile status to `invalid`; lookup failure changes it to `unavailable`. Both states
+block new jobs. The last successful proof remains stored as historical evidence.
+
 The settlement verifier checks receipt success, transaction sender and target,
 decoded `complete(jobId,...)` calldata, provider/client/evaluator, six-decimal
 budget, and final `Completed` state. SQLite adds unique chain-job and settlement-
