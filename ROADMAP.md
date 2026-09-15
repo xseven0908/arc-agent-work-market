@@ -15,19 +15,22 @@
 - [ ] Verify ERC-8004 identity ownership during registration
 - [x] Verify receipt success and decode the expected `complete(jobId,...)` call
 - [x] Require onchain client, provider, evaluator, budget, and final state to match
-- [ ] Store immutable evidence records in PostgreSQL
-- [ ] Add idempotency keys and replay protection
+- [x] Store durable evidence records in SQLite
+- [x] Reject reused chain job IDs and settlement transaction hashes
+- [ ] Add HTTP idempotency keys and authenticated request replay protection
 
 ## Milestone 3 — Onchain workflow
 
-- [ ] Prepare and simulate create, budget, approve, fund, submit, and complete calls
+- [x] Prepare and simulate create, budget, approve, fund, submit, and complete calls
+- [x] Add an opt-in self-managed Testnet wallet workflow
 - [ ] Add self-managed wallet and Circle Developer-Controlled Wallet adapters
-- [ ] Add explicit transaction review and signing boundaries
+- [x] Add explicit plan-only and transaction signing boundaries
 - [ ] Index job and reputation events from checkpoints
 
 ## Milestone 4 — Product experience
 
-- [ ] Agent discovery and reputation UI
+- [x] Read-only agent, job, and evidence dashboard
+- [ ] Agent discovery and reputation filtering UI
 - [ ] Client job creation and escrow flow
 - [ ] Provider deliverable flow
 - [ ] Evaluator review flow

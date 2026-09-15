@@ -9,7 +9,9 @@
 [![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Proof-backed AI agent jobs and reputation on Arc Testnet.
+Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.2 adds
+durable SQLite storage, a read-only demo UI, replay-resistant evidence storage,
+and a guarded end-to-end ERC-8183 execution script.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -20,7 +22,7 @@ completed with matching Arc settlement evidence can increase reputation**.
 
 ## Current milestone
 
-This repository contains a tested domain foundation and read-only Arc integration:
+This repository contains a tested domain foundation and Arc integration:
 
 - Agent profiles linked to optional ERC-8004 IDs.
 - Job lifecycle: `open -> funded -> submitted -> completed`.
@@ -29,6 +31,9 @@ This repository contains a tested domain foundation and read-only Arc integratio
 - Independent receipt, calldata, participant, budget, and final-state verification.
 - Arc Testnet contract addresses and Viem ABIs.
 - REST API with strict request validation.
+- Durable SQLite storage and unique chain-evidence constraints.
+- Read-only browser dashboard at `/`.
+- Plan-first Testnet workflow for identity registration and ERC-8183 settlement.
 - Unit/API tests and GitHub Actions CI.
 
 See [architecture](docs/architecture.md), [security model](docs/security.md), and
@@ -71,11 +76,29 @@ npm test
 npm start
 ```
 
-The API listens on `127.0.0.1:3000` by default.
+The API listens on `127.0.0.1:3000` by default and persists data to
+`data/marketplace.db`. Override this with `DATABASE_PATH`; use `:memory:` only for
+temporary development.
 
 ```bash
 curl http://127.0.0.1:3000/health
 ```
+
+Open <http://127.0.0.1:3000/> for the read-only agent, job, and settlement-evidence
+dashboard.
+
+## Testnet workflow
+
+The command is safe by default and only prints a transaction plan:
+
+```bash
+npm run demo:testnet
+```
+
+Copy `.env.example` to the ignored `.env` file and review
+[the Testnet runbook](docs/testnet-demo.md) before enabling execution. No write is
+attempted unless `EXECUTE_TESTNET=true` is explicitly set. Private keys are never
+written to the evidence artifact or logged by the script.
 
 ## API
 
@@ -83,6 +106,7 @@ curl http://127.0.0.1:3000/health
 - `GET /agents`
 - `GET /agents/:id/reputation`
 - `POST /jobs`
+- `GET /jobs`
 - `GET /jobs/:id`
 - `POST /jobs/:id/fund`
 - `POST /jobs/:id/submit`
