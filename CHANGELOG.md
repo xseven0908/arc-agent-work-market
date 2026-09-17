@@ -41,7 +41,7 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Generated local wallets were confirmed to use distinct public addresses, an
   ignored secrets file, and owner-only file permissions.
 - Arc Testnet RPC chain and balance check: passed; both new wallets were unfunded.
-- GitHub Actions: pending synchronization.
+- GitHub Actions CI run `35176863623`: passed after synchronization.
 - Real Testnet transactions broadcast in this release: **none**.
 
 ### Known limitations
