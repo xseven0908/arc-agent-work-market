@@ -21,6 +21,7 @@ Arc Testnet ---> settlement verifier ---> receipt + calldata + ERC-8183 state
             ---> Arc reader ------------> ERC-8004 identity / ERC-8183 job
 
 operator review ---> guarded workflow script ---> wallet clients ---> Arc Testnet
+public evidence ---> schema validator ---> onchain verifier ---> Arc Testnet
 ```
 
 ## Boundaries
@@ -31,6 +32,7 @@ operator review ---> guarded workflow script ---> wallet clients ---> Arc Testne
 - `chain/`: Arc addresses, ABIs, and read-only Viem integration.
 - `http/`: input validation and REST transport.
 - `scripts/`: explicit operator-run Testnet transaction workflow.
+- `evidence/`: versioned public artifact schema and independent chain verifier.
 
 ## Trust model
 

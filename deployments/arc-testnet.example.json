@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 1,
-  "generatedAt": "YYYY-MM-DDTHH:mm:ss.sssZ",
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T00:00:00.000Z",
   "chainId": 5042002,
-  "rpcUrl": "https://rpc.testnet.arc.network",
+  "rpcEndpoint": "https://rpc.testnet.arc.network",
   "contracts": {
     "usdc": "0x3600000000000000000000000000000000000000",
     "identityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
@@ -11,9 +11,9 @@
     "agenticCommerce": "0x0747EEf0706327138c69792bF28Cd525089e4583"
   },
   "participants": {
-    "client": "0x...",
-    "provider": "0x...",
-    "evaluator": "0x..."
+    "client": "0x0000000000000000000000000000000000000000",
+    "provider": "0x0000000000000000000000000000000000000000",
+    "evaluator": "0x0000000000000000000000000000000000000000"
   },
   "identities": {
     "client": null,
@@ -25,15 +25,15 @@
     "expiredAt": "0",
     "description": "Example only; replace with verified Testnet evidence",
     "artifactUri": "https://github.com/xseven0908/arc-agent-work-market",
-    "deliverable": "0x...",
-    "reason": "0x..."
+    "deliverable": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "reason": "0x0000000000000000000000000000000000000000000000000000000000000000"
   },
   "transactions": {
-    "createJob": "0x...",
-    "setBudget": "0x...",
-    "approve": "0x...",
-    "fund": "0x...",
-    "submit": "0x...",
-    "complete": "0x..."
+    "createJob": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "setBudget": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "approve": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "fund": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "submit": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "complete": "0x0000000000000000000000000000000000000000000000000000000000000000"
   }
 }

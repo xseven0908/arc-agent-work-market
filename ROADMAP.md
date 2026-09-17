@@ -26,6 +26,7 @@
 - [x] Add an opt-in self-managed Testnet wallet workflow
 - [ ] Add self-managed wallet and Circle Developer-Controlled Wallet adapters
 - [x] Add explicit plan-only and transaction signing boundaries
+- [x] Add a versioned public evidence schema and independent onchain verifier
 - [ ] Index job and reputation events from checkpoints
 
 ## Milestone 4 — Product experience
@@ -35,7 +36,7 @@
 - [ ] Client job creation and escrow flow
 - [ ] Provider deliverable flow
 - [ ] Evaluator review flow
-- [ ] Public read-only demo with Arcscan evidence
+- [ ] Public read-only demo with official Arc Explorer evidence
 
 ## Milestone 5 — Open ecosystem contribution
 

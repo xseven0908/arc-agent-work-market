@@ -16,6 +16,9 @@ This project targets Arc Testnet and is not production-ready.
 - SQLite rejects reuse of a chain job ID or settlement transaction across records.
 - USDC amounts use the ERC-20 representation with six decimal places.
 - Testnet transaction broadcasting requires an explicit `EXECUTE_TESTNET=true`.
+- Generated evidence never contains the literal URL of a custom RPC provider.
+- Public evidence is not trusted until transaction calldata, ordering, identities,
+  and final job state pass independent RPC verification.
 
 ## Known gaps
 

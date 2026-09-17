@@ -17,6 +17,54 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add a Circle Developer-Controlled Wallet adapter.
 - Publish a manually verified Arc Testnet evidence artifact.
 
+## [0.5.0] - 2026-09-17
+
+### Added
+
+- Version 2 public Testnet evidence schema with strict Arc chain and official
+  contract-address validation.
+- Independent `npm run evidence:verify -- <file>` command.
+- Verification of transaction receipt status, sender, target, decoded calldata,
+  workflow order, identity mint events, current ERC-8004 owner and metadata, and
+  final ERC-8183 Completed state.
+- Public client and provider ERC-8004 metadata templates with Testnet disclaimers.
+- Evidence-schema tests covering valid artifacts, contract substitution, and RPC
+  credential redaction.
+
+### Changed
+
+- Advanced the package minor version to `0.5.0`.
+- Evidence format advanced from schema version 1 to version 2.
+- Replaced the legacy Arcscan link with the current official Arc Testnet Explorer.
+- Identity evidence now includes the exact registered metadata URI.
+- Corrected the README architecture diagram to show SQLite as the default store.
+
+### Security
+
+- Official RPC URLs may be recorded, but custom RPC URLs are always emitted as
+  `custom-rpc-redacted` to prevent API keys in URLs from leaking into public files
+  or plan output.
+- Evidence verification rejects substituted contracts, reverted transactions,
+  wrong senders or targets, modified parameters, reordered calls, changed identity
+  state, and mismatched final job state.
+
+### Verification
+
+- TypeScript strict typecheck and build: passed locally.
+- Test suite: 23 tests across six files, passed locally, including validation of
+  the tracked example evidence artifact.
+- Plan-only Testnet workflow: passed without signing or broadcasting.
+- GitHub Actions: passed after synchronization and before release publication.
+- Real Testnet transactions broadcast in this release: **none**.
+
+### Known limitations
+
+- Evidence verification trusts one configured RPC endpoint; quorum verification is
+  not implemented.
+- No real public evidence artifact exists until Testnet wallets execute the flow.
+- Current identity verification intentionally reports transfers or metadata updates
+  after execution as an invalid evidence state.
+
 ## [0.4.0] - 2026-09-15
 
 ### Added
@@ -240,7 +288,8 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `757dab6` — `feat: verify ERC-8183 settlements before scoring reputation`
 - `e569103` — `docs: add prominent disclaimer and project overview`
 
-[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/xseven0908/arc-agent-work-market/compare/v0.2.0...v0.2.1

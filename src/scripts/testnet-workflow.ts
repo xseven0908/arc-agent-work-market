@@ -15,6 +15,10 @@ import {
 import { privateKeyToAccount } from "viem/accounts";
 import { agenticCommerceAbi, identityRegistryAbi } from "../chain/abi.js";
 import { ARC_CONTRACTS, ARC_TESTNET_CHAIN_ID, arcTestnet } from "../chain/arc.js";
+import {
+  publicRpcEndpoint,
+  testnetEvidenceSchema,
+} from "../evidence/schema.js";
 
 const usdcAbi = parseAbi([
   "function balanceOf(address owner) view returns (uint256)",
@@ -51,7 +55,7 @@ if (!execute) {
     mode: "plan-only",
     message: "No transaction was signed or broadcast. Set EXECUTE_TESTNET=true only after reviewing this plan.",
     chainId: ARC_TESTNET_CHAIN_ID,
-    rpcUrl,
+    rpcEndpoint: publicRpcEndpoint(rpcUrl),
     registerIdentities,
     contracts: ARC_CONTRACTS,
     job: { budgetUsdc, description, artifactUri, deliverable, reason },
@@ -113,7 +117,7 @@ async function successfulReceipt(hash: Hex) {
 async function registerIdentity(
   wallet: typeof clientWallet,
   metadataUri: string,
-): Promise<{ agentId: string; transactionHash: Hex }> {
+): Promise<{ agentId: string; metadataUri: string; transactionHash: Hex }> {
   const simulation = await publicClient.simulateContract({
     account: wallet.account,
     address: ARC_CONTRACTS.identityRegistry,
@@ -132,11 +136,19 @@ async function registerIdentity(
     (event) => event.args.from.toLowerCase() === zeroAddress,
   );
   if (!registration) throw new Error("identity registration receipt has no mint Transfer event");
-  return { agentId: registration.args.tokenId.toString(), transactionHash };
+  return {
+    agentId: registration.args.tokenId.toString(),
+    metadataUri,
+    transactionHash,
+  };
 }
 
-let clientIdentity: { agentId: string; transactionHash: Hex } | undefined;
-let providerIdentity: { agentId: string; transactionHash: Hex } | undefined;
+let clientIdentity:
+  | { agentId: string; metadataUri: string; transactionHash: Hex }
+  | undefined;
+let providerIdentity:
+  | { agentId: string; metadataUri: string; transactionHash: Hex }
+  | undefined;
 if (registerIdentities) {
   clientIdentity = await registerIdentity(
     clientWallet,
@@ -217,11 +229,11 @@ const completeSimulation = await publicClient.simulateContract({
 const completeHash = await evaluatorWallet.writeContract(completeSimulation.request);
 await successfulReceipt(completeHash);
 
-const evidence = {
-  schemaVersion: 1,
+const evidence = testnetEvidenceSchema.parse({
+  schemaVersion: 2,
   generatedAt: new Date().toISOString(),
   chainId: ARC_TESTNET_CHAIN_ID,
-  rpcUrl,
+  rpcEndpoint: publicRpcEndpoint(rpcUrl),
   contracts: ARC_CONTRACTS,
   participants: {
     client: clientAccount.address,
@@ -249,7 +261,7 @@ const evidence = {
     submit: submitHash,
     complete: completeHash,
   },
-};
+});
 
 mkdirSync(dirname(evidenceOutput), { recursive: true });
 writeFileSync(evidenceOutput, `${JSON.stringify(evidence, null, 2)}\n`, {

@@ -1,0 +1,15 @@
+{
+  "name": "Arc Work Market Client",
+  "description": "Testnet-only client agent that creates and evaluates proof-backed work on Arc.",
+  "image": "",
+  "agent_type": "work_market_client",
+  "capabilities": [
+    "job_creation",
+    "escrow_funding",
+    "deliverable_evaluation"
+  ],
+  "network": "arc-testnet",
+  "version": "1.0.0",
+  "repository": "https://github.com/xseven0908/arc-agent-work-market",
+  "disclaimer": "Experimental, unaudited, Testnet-only metadata. Do not use with real assets."
+}

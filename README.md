@@ -9,9 +9,8 @@
 [![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.4 revalidates
-linked ERC-8004 identities before accepting new jobs and exposes a manual refresh
-endpoint, preventing stale ownership or metadata proofs from remaining trusted.
+Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.5 adds a public
+evidence format and independent verifier for the full ERC-8004 and ERC-8183 flow.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -38,6 +37,8 @@ This repository contains a tested domain foundation and Arc integration:
 - Durable SQLite storage and unique chain-evidence constraints.
 - Read-only browser dashboard at `/`.
 - Plan-first Testnet workflow for identity registration and ERC-8183 settlement.
+- Versioned, secret-safe evidence schema and independent onchain verifier.
+- Public client/provider Agent metadata templates.
 - Unit/API tests and GitHub Actions CI.
 
 See the [changelog](CHANGELOG.md), [architecture](docs/architecture.md),
@@ -49,7 +50,7 @@ See the [changelog](CHANGELOG.md), [architecture](docs/architecture.md),
 flowchart LR
     Client[API client] --> API[Fastify API]
     API --> Market[Marketplace service]
-    Market --> Store[(In-memory store)]
+    Market --> Store[(SQLite store)]
     Market --> Verify[Settlement verifier]
     Verify --> RPC[Arc Testnet RPC]
     RPC --> Commerce[ERC-8183 AgenticCommerce]
@@ -103,6 +104,17 @@ Copy `.env.example` to the ignored `.env` file and review
 [the Testnet runbook](docs/testnet-demo.md) before enabling execution. No write is
 attempted unless `EXECUTE_TESTNET=true` is explicitly set. Private keys are never
 written to the evidence artifact or logged by the script.
+
+After a successful Testnet run, independently verify the generated artifact:
+
+```bash
+npm run evidence:verify -- deployments/arc-testnet.local.json
+```
+
+The verifier validates the schema and official contract addresses, all transaction
+senders and targets, decoded call parameters, transaction order, identity mint
+events and current registry state, and the final completed ERC-8183 job. Custom RPC
+URLs are redacted from generated evidence so provider credentials cannot leak.
 
 ## API
 

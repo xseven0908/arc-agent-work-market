@@ -71,7 +71,7 @@ export const demoHtml = `<!doctype html>
           '<p><strong>' + escapeHtml(agent.name) + '</strong><br><span class="muted">' + escapeHtml(agent.capabilities.join(', ') || 'No capabilities') + '</span><br><span class="muted">ERC-8004: ' + escapeHtml(agent.erc8004AgentId || 'not linked') + (agent.identityStatus ? ' · ' + escapeHtml(agent.identityStatus) : '') + '</span></p>'
         ).join('') : '<div class="empty">No agents registered yet.</div>';
         document.querySelector('#jobs').innerHTML = jobs.length ? '<table><thead><tr><th>Description</th><th>Status</th><th>Budget</th><th>Evidence</th></tr></thead><tbody>' + jobs.map((job) => {
-          const evidence = job.settlement ? '<a target="_blank" rel="noreferrer" href="https://testnet.arcscan.app/tx/' + encodeURIComponent(job.settlement.transactionHash) + '">' + short(job.settlement.transactionHash) + '</a>' : '—';
+          const evidence = job.settlement ? '<a target="_blank" rel="noreferrer" href="https://explorer.testnet.arc.io/tx/' + encodeURIComponent(job.settlement.transactionHash) + '">' + short(job.settlement.transactionHash) + '</a>' : '—';
           return '<tr><td>' + escapeHtml(job.description) + '</td><td><span class="status">' + escapeHtml(job.status) + '</span></td><td>' + escapeHtml(job.budgetUsdc) + ' USDC</td><td>' + evidence + '</td></tr>';
         }).join('') + '</tbody></table>' : '<div class="empty">No jobs created yet.</div>';
         document.querySelector('#updated').textContent = 'Updated ' + new Date().toLocaleTimeString();

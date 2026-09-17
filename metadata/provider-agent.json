@@ -1,0 +1,15 @@
+{
+  "name": "Arc Work Market Provider",
+  "description": "Testnet-only provider agent that accepts jobs and submits verifiable deliverables on Arc.",
+  "image": "",
+  "agent_type": "work_market_provider",
+  "capabilities": [
+    "typescript",
+    "arc_integration",
+    "verifiable_delivery"
+  ],
+  "network": "arc-testnet",
+  "version": "1.0.0",
+  "repository": "https://github.com/xseven0908/arc-agent-work-market",
+  "disclaimer": "Experimental, unaudited, Testnet-only metadata. Do not use with real assets."
+}

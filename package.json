@@ -1,6 +1,6 @@
 {
   "name": "arc-agent-work-market",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Proof-backed AI agent jobs and reputation on Arc Testnet",
   "type": "module",
@@ -14,7 +14,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "demo:testnet": "node --env-file-if-exists=.env --import tsx src/scripts/testnet-workflow.ts"
+    "demo:testnet": "node --env-file-if-exists=.env --import tsx src/scripts/testnet-workflow.ts",
+    "evidence:verify": "node --env-file-if-exists=.env --import tsx src/scripts/verify-evidence.ts"
   },
   "dependencies": {
     "fastify": "^5.6.2",

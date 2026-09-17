@@ -17,6 +17,7 @@ identities, then executes the ERC-8183 lifecycle:
 5. Submit a deliverable hash.
 6. Complete settlement as the evaluator.
 7. Write public addresses, job data, and transaction hashes to an evidence file.
+8. Independently verify the evidence against Arc RPC.
 
 The API server never reads wallet keys. Only this standalone script has a signing
 boundary.
@@ -61,11 +62,22 @@ balances, and client ERC-20 balance before the first transaction. Every contract
 call is simulated before signing, and every receipt must succeed before the next
 step begins.
 
+Custom RPC URLs are never copied verbatim into the evidence file because they can
+contain provider API keys. The official public endpoint is recorded as-is; every
+other endpoint is represented as `custom-rpc-redacted`.
+
 ## Publish evidence
 
-Inspect `deployments/arc-testnet.local.json`, independently open every transaction
-on Arcscan, and confirm that it contains no private information. Only after manual
-verification should a sanitized copy be committed as `deployments/arc-testnet.json`.
+First run the independent verifier:
+
+```bash
+npm run evidence:verify -- deployments/arc-testnet.local.json
+```
+
+Then inspect the file, independently open every transaction in the official Arc
+Explorer, and confirm that it contains no private information. Only after both
+automated and manual verification should a sanitized copy be committed as
+`deployments/arc-testnet.json`.
 
 The evidence artifact intentionally contains no private keys, API keys, entity
 secrets, or signatures beyond already-public transaction hashes.
