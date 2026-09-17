@@ -45,7 +45,7 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   and dashboard output are covered by automated tests.
 - TypeScript strict typecheck and build: passed locally.
 - Test suite: 29 tests across eight files, passed locally.
-- GitHub Actions: pending synchronization.
+- GitHub Actions CI run `35189796725`: passed after synchronization.
 - Real Testnet transactions broadcast in this release: **none**; indexing was
   read-only.
 
