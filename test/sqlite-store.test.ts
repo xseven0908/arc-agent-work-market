@@ -31,6 +31,40 @@ const client = "0x2222222222222222222222222222222222222222";
 const evaluator = "0x3333333333333333333333333333333333333333";
 
 describe("SqliteMarketplaceStore", () => {
+  it("persists indexed chain events and checkpoints across restarts", async () => {
+    const path = databasePath();
+    const firstStore = new SqliteMarketplaceStore(path);
+    await firstStore.saveChainEvents([
+      {
+        id: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:1",
+        chainId: 5042002,
+        source: "erc8183",
+        contractAddress: "0x0747EEf0706327138c69792bF28Cd525089e4583",
+        eventName: "JobCompleted",
+        blockNumber: "62510430",
+        logIndex: 1,
+        transactionHash: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        jobId: "186575",
+        details: { jobId: "186575" },
+        indexedAt: "2026-09-17T00:00:00.000Z",
+      },
+    ], {
+      name: "arc-testnet-activity-v2",
+      blockNumber: "62510430",
+      updatedAt: "2026-09-17T00:00:00.000Z",
+    });
+    firstStore.close();
+
+    const secondStore = new SqliteMarketplaceStore(path);
+    expect(await secondStore.listChainEvents(10)).toMatchObject([
+      { eventName: "JobCompleted", jobId: "186575" },
+    ]);
+    expect(
+      await secondStore.getChainCheckpoint("arc-testnet-activity-v2"),
+    ).toMatchObject({ blockNumber: "62510430" });
+    secondStore.close();
+  });
+
   it("persists agents and jobs across store instances", async () => {
     const path = databasePath();
     const firstStore = new SqliteMarketplaceStore(path);

@@ -13,8 +13,48 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Planned
 
 - Add authenticated HTTP requests and idempotency keys.
-- Index job and reputation events from block checkpoints.
+- Index ERC-8004 reputation feedback events.
 - Add a Circle Developer-Controlled Wallet adapter.
+
+## [0.7.0] - 2026-09-17
+
+### Added
+
+- Checkpointed Arc Testnet event indexer for ERC-8004 identity registrations and
+  the full ERC-8183 job lifecycle.
+- Atomic SQLite `chain_events` and `chain_sync_checkpoints` persistence.
+- Public `GET /chain/activity?limit=100` endpoint with a bounded maximum result
+  size of 250 events.
+- Dashboard activity metric and Explorer-linked protocol event timeline.
+- `npm run index:testnet` operator command with configurable start block and chunk
+  size.
+
+### Reliability and security
+
+- Each block-range batch and its checkpoint commit in one SQLite transaction, so
+  interrupted runs resume without skipping a partially persisted range.
+- Event IDs use transaction hash plus log index, making replays idempotent.
+- The indexer is read-only and never loads wallet private keys or signs a
+  transaction.
+
+### Verification
+
+- Live Arc indexing: 17 events imported across 11 bounded chunks from block
+  `62510300`, including identities `895667`/`895668` and job `186575`.
+- Resume behavior, invalid chunk size, SQLite restart persistence, API response,
+  and dashboard output are covered by automated tests.
+- TypeScript strict typecheck and build: passed locally.
+- Test suite: 29 tests across eight files, passed locally.
+- GitHub Actions: pending synchronization.
+- Real Testnet transactions broadcast in this release: **none**; indexing was
+  read-only.
+
+### Known limitations
+
+- The indexer trusts one RPC endpoint and does not yet use an RPC quorum.
+- A configurable confirmation delay and explicit chain-reorganization rollback
+  are not implemented.
+- Reputation feedback events are not yet indexed.
 
 ## [0.6.0] - 2026-09-17
 

@@ -37,6 +37,14 @@ export function buildApp(service: MarketplaceService) {
     return reply.code(201).send(job);
   });
   app.get("/jobs", async () => service.listJobs());
+  app.get<{ Querystring: { limit?: string } }>(
+    "/chain/activity",
+    async (request) => {
+      const parsed = Number.parseInt(request.query.limit ?? "100", 10);
+      const limit = Number.isFinite(parsed) ? parsed : 100;
+      return service.listChainActivity(limit);
+    },
+  );
   app.get<{ Params: { id: string } }>("/jobs/:id", async (request) =>
     service.getJob(request.params.id),
   );

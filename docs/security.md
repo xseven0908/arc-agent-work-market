@@ -19,6 +19,8 @@ This project targets Arc Testnet and is not production-ready.
 - Generated evidence never contains the literal URL of a custom RPC provider.
 - Public evidence is not trusted until transaction calldata, ordering, identities,
   and final job state pass independent RPC verification.
+- Event indexing is read-only, uses bounded block ranges, and advances its durable
+  checkpoint in the same SQLite transaction as the corresponding event batch.
 
 ## Known gaps
 
@@ -27,6 +29,8 @@ This project targets Arc Testnet and is not production-ready.
 - Identity can change after one request completes; there is no atomic snapshot
   spanning the IdentityRegistry read and subsequent local database write.
 - A single configured RPC is trusted; RPC quorum is not implemented.
+- The indexer follows the current chain head and does not yet delay for a
+  configurable reorganization-confirmation window.
 - The API does not hold keys or submit transactions. The separate operator script
   accepts environment-provided Testnet keys and must not run on an exposed server.
 

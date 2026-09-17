@@ -15,7 +15,7 @@ export const demoHtml = `<!doctype html>
       p { color: #aab5cd; line-height: 1.6; max-width: 720px; }
       .tag { width: fit-content; padding: 7px 11px; border: 1px solid #745cff; border-radius: 999px; color: #b9adff; font-size: .78rem; }
       .warning { border: 1px solid #743f30; background: #241510; color: #ffc8b4; padding: 14px 16px; border-radius: 12px; line-height: 1.5; }
-      .metrics, .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .metrics, .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
       .grid { grid-template-columns: 1fr 1.5fr; margin-top: 14px; }
       .card { background: #101522; border: 1px solid #202a40; border-radius: 16px; padding: 20px; min-width: 0; }
       .metric strong { display: block; font-size: 1.8rem; margin-top: 7px; }
@@ -43,6 +43,11 @@ export const demoHtml = `<!doctype html>
         <div class="card metric"><span class="label">REGISTERED AGENTS</span><strong id="agent-count">—</strong></div>
         <div class="card metric"><span class="label">TOTAL JOBS</span><strong id="job-count">—</strong></div>
         <div class="card metric"><span class="label">VERIFIED SETTLEMENTS</span><strong id="settled-count">—</strong></div>
+        <div class="card metric"><span class="label">INDEXED EVENTS</span><strong id="event-count">—</strong></div>
+      </section>
+      <section class="card" style="margin-top:14px">
+        <h2>Arc onchain activity</h2>
+        <div class="table-wrap"><div id="activity" class="empty">Loading…</div></div>
       </section>
       <section class="grid">
         <div class="card">
@@ -60,13 +65,15 @@ export const demoHtml = `<!doctype html>
       const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[character]));
       const short = (value) => value ? value.slice(0, 8) + '…' + value.slice(-6) : '—';
       async function load() {
-        const [agentsResponse, jobsResponse] = await Promise.all([fetch('/agents'), fetch('/jobs')]);
-        if (!agentsResponse.ok || !jobsResponse.ok) throw new Error('API request failed');
+        const [agentsResponse, jobsResponse, activityResponse] = await Promise.all([fetch('/agents'), fetch('/jobs'), fetch('/chain/activity?limit=100')]);
+        if (!agentsResponse.ok || !jobsResponse.ok || !activityResponse.ok) throw new Error('API request failed');
         const agents = await agentsResponse.json();
         const jobs = await jobsResponse.json();
+        const activity = await activityResponse.json();
         document.querySelector('#agent-count').textContent = agents.length;
         document.querySelector('#job-count').textContent = jobs.length;
         document.querySelector('#settled-count').textContent = jobs.filter((job) => job.settlement).length;
+        document.querySelector('#event-count').textContent = activity.length;
         document.querySelector('#agents').innerHTML = agents.length ? agents.map((agent) =>
           '<p><strong>' + escapeHtml(agent.name) + '</strong><br><span class="muted">' + escapeHtml(agent.capabilities.join(', ') || 'No capabilities') + '</span><br><span class="muted">ERC-8004: ' + escapeHtml(agent.erc8004AgentId || 'not linked') + (agent.identityStatus ? ' · ' + escapeHtml(agent.identityStatus) : '') + '</span></p>'
         ).join('') : '<div class="empty">No agents registered yet.</div>';
@@ -74,6 +81,11 @@ export const demoHtml = `<!doctype html>
           const evidence = job.settlement ? '<a target="_blank" rel="noreferrer" href="https://explorer.testnet.arc.io/tx/' + encodeURIComponent(job.settlement.transactionHash) + '">' + short(job.settlement.transactionHash) + '</a>' : '—';
           return '<tr><td>' + escapeHtml(job.description) + '</td><td><span class="status">' + escapeHtml(job.status) + '</span></td><td>' + escapeHtml(job.budgetUsdc) + ' USDC</td><td>' + evidence + '</td></tr>';
         }).join('') + '</tbody></table>' : '<div class="empty">No jobs created yet.</div>';
+        document.querySelector('#activity').innerHTML = activity.length ? '<table><thead><tr><th>Block</th><th>Protocol</th><th>Event</th><th>Reference</th><th>Transaction</th></tr></thead><tbody>' + activity.map((event) => {
+          const reference = event.jobId ? 'Job ' + event.jobId : event.identityId ? 'Identity ' + event.identityId : '—';
+          const transaction = '<a target="_blank" rel="noreferrer" href="https://explorer.testnet.arc.io/tx/' + encodeURIComponent(event.transactionHash) + '">' + short(event.transactionHash) + '</a>';
+          return '<tr><td>' + escapeHtml(event.blockNumber) + '</td><td>' + escapeHtml(event.source.toUpperCase()) + '</td><td><span class="status">' + escapeHtml(event.eventName) + '</span></td><td>' + escapeHtml(reference) + '</td><td>' + transaction + '</td></tr>';
+        }).join('') + '</tbody></table>' : '<div class="empty">Run npm run index:testnet to import Arc activity.</div>';
         document.querySelector('#updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
       }
       document.querySelector('#refresh').addEventListener('click', () => load().catch(showError));

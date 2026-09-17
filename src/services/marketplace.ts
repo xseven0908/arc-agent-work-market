@@ -185,6 +185,10 @@ export class MarketplaceService {
     return this.store.listJobs();
   }
 
+  async listChainActivity(limit = 100) {
+    return this.store.listChainEvents(Math.min(Math.max(limit, 1), 250));
+  }
+
   async refreshAgentIdentity(id: string): Promise<AgentProfile> {
     const agent = await this.requireAgent(id);
     if (!agent.erc8004AgentId) {

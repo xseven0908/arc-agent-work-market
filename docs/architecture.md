@@ -22,6 +22,7 @@ Arc Testnet ---> settlement verifier ---> receipt + calldata + ERC-8183 state
 
 operator review ---> guarded workflow script ---> wallet clients ---> Arc Testnet
 public evidence ---> schema validator ---> onchain verifier ---> Arc Testnet
+Arc Testnet ---> chunked event reader ---> atomic checkpoint + event rows
 ```
 
 ## Boundaries
@@ -33,6 +34,7 @@ public evidence ---> schema validator ---> onchain verifier ---> Arc Testnet
 - `http/`: input validation and REST transport.
 - `scripts/`: explicit operator-run Testnet transaction workflow.
 - `evidence/`: versioned public artifact schema and independent chain verifier.
+- `indexer/`: bounded event-range orchestration and resumable checkpoints.
 
 ## Trust model
 
@@ -55,6 +57,7 @@ remain future hardening work.
 ## Scaling decision
 
 Keep the current version in one process. SQLite is appropriate for a public demo,
-but PostgreSQL and an event indexer are required before multi-instance deployment.
-A queue is unnecessary until block replay or evidence verification becomes a
-measurable bottleneck.
+and the event indexer writes every completed chunk and checkpoint in one database
+transaction. PostgreSQL plus a single elected indexer worker are required before
+multi-instance deployment. A queue is unnecessary until block replay or evidence
+verification becomes a measurable bottleneck.

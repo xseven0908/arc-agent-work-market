@@ -73,12 +73,16 @@ describe("HTTP API", () => {
     apps.push(app);
     const demo = await app.inject({ method: "GET", url: "/" });
     const jobs = await app.inject({ method: "GET", url: "/jobs" });
+    const activity = await app.inject({ method: "GET", url: "/chain/activity" });
 
     expect(demo.statusCode).toBe(200);
     expect(demo.headers["content-type"]).toContain("text/html");
     expect(demo.body).toContain("Proof-backed agent work");
     expect(demo.body).toContain("Experimental software");
+    expect(demo.body).toContain("Arc onchain activity");
     expect(jobs.statusCode).toBe(200);
     expect(jobs.json()).toEqual([]);
+    expect(activity.statusCode).toBe(200);
+    expect(activity.json()).toEqual([]);
   });
 });

@@ -1,7 +1,12 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import type { AgentProfile, WorkJob } from "../domain/types.js";
+import type {
+  AgentProfile,
+  ChainActivityEvent,
+  ChainSyncCheckpoint,
+  WorkJob,
+} from "../domain/types.js";
 import type { MarketplaceStore } from "./store.js";
 
 interface JsonRow {
@@ -41,6 +46,25 @@ export class SqliteMarketplaceStore implements MarketplaceStore {
         job_id TEXT PRIMARY KEY REFERENCES jobs(id),
         transaction_hash TEXT NOT NULL UNIQUE,
         chain_job_id TEXT NOT NULL UNIQUE,
+        payload TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS chain_events (
+        id TEXT PRIMARY KEY,
+        block_number INTEGER NOT NULL,
+        log_index INTEGER NOT NULL,
+        event_name TEXT NOT NULL,
+        transaction_hash TEXT NOT NULL,
+        payload TEXT NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS chain_events_order
+        ON chain_events(block_number DESC, log_index DESC);
+
+      CREATE TABLE IF NOT EXISTS chain_sync_checkpoints (
+        name TEXT PRIMARY KEY,
+        block_number INTEGER NOT NULL,
+        updated_at TEXT NOT NULL,
         payload TEXT NOT NULL
       );
     `);
@@ -143,6 +167,75 @@ export class SqliteMarketplaceStore implements MarketplaceStore {
       `)
       .all(agentId) as unknown as JsonRow[];
     return rows.map((row) => JSON.parse(row.payload) as WorkJob);
+  }
+
+  async saveChainEvents(
+    events: ChainActivityEvent[],
+    checkpoint: ChainSyncCheckpoint,
+  ): Promise<void> {
+    this.database.exec("BEGIN IMMEDIATE");
+    try {
+      const saveEvent = this.database.prepare(`
+        INSERT INTO chain_events (
+          id, block_number, log_index, event_name, transaction_hash, payload
+        ) VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          block_number = excluded.block_number,
+          log_index = excluded.log_index,
+          event_name = excluded.event_name,
+          transaction_hash = excluded.transaction_hash,
+          payload = excluded.payload
+      `);
+      for (const event of events) {
+        saveEvent.run(
+          event.id,
+          Number(event.blockNumber),
+          event.logIndex,
+          event.eventName,
+          event.transactionHash.toLowerCase(),
+          JSON.stringify(event),
+        );
+      }
+      this.database
+        .prepare(`
+          INSERT INTO chain_sync_checkpoints (name, block_number, updated_at, payload)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(name) DO UPDATE SET
+            block_number = excluded.block_number,
+            updated_at = excluded.updated_at,
+            payload = excluded.payload
+        `)
+        .run(
+          checkpoint.name,
+          Number(checkpoint.blockNumber),
+          checkpoint.updatedAt,
+          JSON.stringify(checkpoint),
+        );
+      this.database.exec("COMMIT");
+    } catch (error) {
+      this.database.exec("ROLLBACK");
+      throw error;
+    }
+  }
+
+  async listChainEvents(limit: number): Promise<ChainActivityEvent[]> {
+    const rows = this.database
+      .prepare(`
+        SELECT payload FROM chain_events
+        ORDER BY block_number DESC, log_index DESC
+        LIMIT ?
+      `)
+      .all(limit) as unknown as JsonRow[];
+    return rows.map((row) => JSON.parse(row.payload) as ChainActivityEvent);
+  }
+
+  async getChainCheckpoint(
+    name: string,
+  ): Promise<ChainSyncCheckpoint | undefined> {
+    const row = this.database
+      .prepare("SELECT payload FROM chain_sync_checkpoints WHERE name = ?")
+      .get(name) as JsonRow | undefined;
+    return row ? (JSON.parse(row.payload) as ChainSyncCheckpoint) : undefined;
   }
 
   close(): void {

@@ -70,3 +70,24 @@ export interface AgentReputation {
   score: number;
   evidenceTransactionHashes: Hex[];
 }
+
+export interface ChainActivityEvent {
+  id: string;
+  chainId: 5042002;
+  source: "erc8004" | "erc8183";
+  contractAddress: Address;
+  eventName: string;
+  blockNumber: string;
+  logIndex: number;
+  transactionHash: Hex;
+  jobId?: string;
+  identityId?: string;
+  details: Record<string, string>;
+  indexedAt: string;
+}
+
+export interface ChainSyncCheckpoint {
+  name: string;
+  blockNumber: string;
+  updatedAt: string;
+}

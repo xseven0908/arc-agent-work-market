@@ -28,7 +28,8 @@
 - [x] Add explicit plan-only and transaction signing boundaries
 - [x] Add a versioned public evidence schema and independent onchain verifier
 - [x] Publish an independently verified ERC-8004 + ERC-8183 Testnet execution
-- [ ] Index job and reputation events from checkpoints
+- [x] Index ERC-8004 identity and ERC-8183 job events from checkpoints
+- [ ] Index ERC-8004 reputation feedback events
 
 ## Milestone 4 — Product experience
 

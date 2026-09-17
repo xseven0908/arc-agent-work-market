@@ -9,8 +9,8 @@
 [![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.6 publishes a
-reproducible, independently verifiable ERC-8004 and ERC-8183 Testnet execution.
+Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.7 adds a
+checkpointed ERC-8004/ERC-8183 event indexer and public activity dashboard.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -35,7 +35,9 @@ This repository contains a tested domain foundation and Arc integration:
 - Arc Testnet contract addresses and Viem ABIs.
 - REST API with strict request validation.
 - Durable SQLite storage and unique chain-evidence constraints.
+- Resumable, chunked Arc event indexing with atomic SQLite checkpoints.
 - Read-only browser dashboard at `/`.
+- Public `GET /chain/activity` endpoint with Explorer-linked protocol events.
 - Plan-first Testnet workflow for identity registration and ERC-8183 settlement.
 - Versioned, secret-safe evidence schema and independent onchain verifier.
 - Public client/provider Agent metadata templates.
@@ -111,6 +113,18 @@ curl http://127.0.0.1:3000/health
 
 Open <http://127.0.0.1:3000/> for the read-only agent, job, and settlement-evidence
 dashboard.
+
+Import Arc activity before opening the dashboard:
+
+```bash
+npm run index:testnet
+npm start
+```
+
+The indexer defaults to the first public proof's block range, scans in bounded
+chunks, and resumes from its last committed checkpoint. Override
+`ARC_INDEX_START_BLOCK` and `ARC_INDEX_CHUNK_SIZE` when indexing another range.
+The indexed feed is also available as `GET /chain/activity?limit=100`.
 
 ## Testnet workflow
 
