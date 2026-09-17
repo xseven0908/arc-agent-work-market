@@ -92,3 +92,8 @@ automated and manual verification should a sanitized copy be committed as
 
 The evidence artifact intentionally contains no private keys, API keys, entity
 secrets, or signatures beyond already-public transaction hashes.
+
+The repository's first published proof is available at
+`deployments/arc-testnet.json`. It records ERC-8004 identities `895667` and
+`895668`, ERC-8183 job `186575`, and six independently verified workflow
+transactions ending in a Completed state.

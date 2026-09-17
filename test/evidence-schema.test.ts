@@ -57,6 +57,16 @@ describe("Testnet evidence schema", () => {
     expect(testnetEvidenceSchema.parse(example).schemaVersion).toBe(2);
   });
 
+  it("keeps the published Arc Testnet evidence schema-valid", () => {
+    const published = JSON.parse(
+      readFileSync(
+        new URL("../deployments/arc-testnet.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    expect(testnetEvidenceSchema.parse(published).job.jobId).toBe("186575");
+  });
+
   it("accepts a complete version 2 evidence artifact", () => {
     expect(testnetEvidenceSchema.parse(evidence).schemaVersion).toBe(2);
   });

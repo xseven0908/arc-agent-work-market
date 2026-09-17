@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T03:33:44.061Z",
+  "chainId": 5042002,
+  "rpcEndpoint": "https://rpc.testnet.arc.network",
+  "contracts": {
+    "usdc": "0x3600000000000000000000000000000000000000",
+    "identityRegistry": "0x8004A818BFB912233c491871b3d84c89A494BD9e",
+    "reputationRegistry": "0x8004B663056A597Dffe9eCcC1965A193B7388713",
+    "validationRegistry": "0x8004Cb1BF31DAf7788923b405b754f57acEB4272",
+    "agenticCommerce": "0x0747EEf0706327138c69792bF28Cd525089e4583"
+  },
+  "participants": {
+    "client": "0xfd87f4CD9266fB91d8Ec7F5EfF6010a8CA79625B",
+    "provider": "0x8486a9Fc5e42f2ab28608e1C93690Cb424565805",
+    "evaluator": "0xfd87f4CD9266fB91d8Ec7F5EfF6010a8CA79625B"
+  },
+  "identities": {
+    "client": {
+      "agentId": "895667",
+      "metadataUri": "https://raw.githubusercontent.com/xseven0908/arc-agent-work-market/v0.5.0/metadata/client-agent.json",
+      "transactionHash": "0xd7f21810ecd3aa140772669b0f58eca0175da92f2cc1dbe8cd3d2f6c7e795640"
+    },
+    "provider": {
+      "agentId": "895668",
+      "metadataUri": "https://raw.githubusercontent.com/xseven0908/arc-agent-work-market/v0.5.0/metadata/provider-agent.json",
+      "transactionHash": "0xd86e80cff1174e32271d20ca109a11f7d35a8ba8f6a1f6958d794ad71cbd1dcc"
+    }
+  },
+  "job": {
+    "jobId": "186575",
+    "budgetUsdc": "0.1",
+    "expiredAt": "1789619599",
+    "description": "Arc Agent Work Market public Testnet demonstration",
+    "artifactUri": "https://github.com/xseven0908/arc-agent-work-market",
+    "deliverable": "0x87d59a6c3669da509127a85d999a176c61c10d7797556b504c45934106ac7cb3",
+    "reason": "0x448f28e01aeef90986bd796c8219ab00f6651bff3f467dc4905d8df135064b32"
+  },
+  "transactions": {
+    "createJob": "0xc38973f233409e061509e4452a155c2525a41d72d3d301c0119fa80815d07cef",
+    "setBudget": "0xd009b003f8a78509c4f4c59d266af8736e5ee255324ecb4da089a6abb165ae8f",
+    "approve": "0x93cc64447151b894efd559e8a18926e4f75a0c1a9e5e57a219df0622745ca8c7",
+    "fund": "0xfb828c2bae1fb90821e98912b8ce212754ce7390fbcf5baac533605557db5e5a",
+    "submit": "0x3c6ad3899fd8853c5e53d15dc8f7205268434f0554cefa0506d47ccc906de50a",
+    "complete": "0x9d290a0a4f2f3ca0d47dc94fff8c3f653e42d5b3bbb695102941259963957ea5"
+  }
+}

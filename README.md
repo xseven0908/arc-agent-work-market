@@ -9,9 +9,8 @@
 [![Arc Testnet](https://img.shields.io/badge/network-Arc%20Testnet-6c5ce7)](https://docs.arc.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.5 adds a public
-evidence format, an independent verifier, and safe isolated-wallet bootstrap tools
-for the full ERC-8004 and ERC-8183 flow.
+Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.6 publishes a
+reproducible, independently verifiable ERC-8004 and ERC-8183 Testnet execution.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -44,6 +43,26 @@ This repository contains a tested domain foundation and Arc integration:
 
 See the [changelog](CHANGELOG.md), [architecture](docs/architecture.md),
 [security model](docs/security.md), and [roadmap](ROADMAP.md).
+
+## Verified Arc Testnet proof
+
+The tracked [public evidence artifact](deployments/arc-testnet.json) records a
+successful end-to-end Testnet run:
+
+- ERC-8004 client identity: `895667`
+- ERC-8004 provider identity: `895668`
+- ERC-8183 job: `186575`
+- Budget: `0.1` Testnet USDC
+- Transactions independently verified: `6`
+- Final state: `Completed`
+- Final transaction: [`0x9d290a…57ea5`](https://explorer.testnet.arc.io/tx/0x9d290a0a4f2f3ca0d47dc94fff8c3f653e42d5b3bbb695102941259963957ea5)
+
+Re-verify every receipt, decoded call, participant, identity, execution order, and
+final state directly against Arc Testnet:
+
+```bash
+npm run evidence:verify -- deployments/arc-testnet.json
+```
 
 ## Architecture at a glance
 

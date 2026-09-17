@@ -27,6 +27,7 @@
 - [ ] Add self-managed wallet and Circle Developer-Controlled Wallet adapters
 - [x] Add explicit plan-only and transaction signing boundaries
 - [x] Add a versioned public evidence schema and independent onchain verifier
+- [x] Publish an independently verified ERC-8004 + ERC-8183 Testnet execution
 - [ ] Index job and reputation events from checkpoints
 
 ## Milestone 4 — Product experience

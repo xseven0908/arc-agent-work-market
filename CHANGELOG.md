@@ -15,7 +15,49 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add authenticated HTTP requests and idempotency keys.
 - Index job and reputation events from block checkpoints.
 - Add a Circle Developer-Controlled Wallet adapter.
-- Publish a manually verified Arc Testnet evidence artifact.
+
+## [0.6.0] - 2026-09-17
+
+### Added
+
+- First public, machine-readable Arc Testnet execution artifact for the complete
+  ERC-8004 identity and ERC-8183 job lifecycle.
+- README proof summary with identity IDs, job ID, budget, final transaction, and
+  a one-command independent verification path.
+- CI schema regression coverage for the published evidence artifact.
+
+### Onchain execution
+
+- Registered client ERC-8004 identity `895667` and provider identity `895668`.
+- Created and completed ERC-8183 job `186575` with a `0.1` Testnet USDC budget.
+- Successfully executed and confirmed create, budget, approve, fund, submit, and
+  complete transactions between distinct client and provider wallets.
+- Final completion transaction: `0x9d290a0a4f2f3ca0d47dc94fff8c3f653e42d5b3bbb695102941259963957ea5`.
+
+### Security
+
+- Published evidence contains public addresses, immutable metadata URLs, job data,
+  contract addresses, and transaction hashes only; it contains no wallet keys,
+  RPC credentials, cookies, or private signatures.
+- The ignored local `.env` remains owner-readable only and execution remains
+  disabled by default after the one-time operator override.
+
+### Verification
+
+- Independent verifier result: valid, six workflow transactions and two ERC-8004
+  identities verified from blocks `62510390` through `62510430`.
+- TypeScript strict typecheck and build: passed locally.
+- Test suite: 26 tests across seven files, passed locally, including the published
+  evidence artifact regression check.
+- GitHub Actions: pending synchronization.
+- Real Testnet transactions broadcast in this release: **eight** — two identity
+  registrations and six ERC-8183 workflow transactions.
+
+### Known limitations
+
+- Verification currently trusts one configured RPC endpoint rather than a quorum.
+- The public artifact proves one demonstration job, not production readiness or
+  the safety of using real assets.
 
 ## [0.5.1] - 2026-09-17
 
