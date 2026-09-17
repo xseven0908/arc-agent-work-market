@@ -49,7 +49,7 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - TypeScript strict typecheck and build: passed locally.
 - Test suite: 26 tests across seven files, passed locally, including the published
   evidence artifact regression check.
-- GitHub Actions: pending synchronization.
+- GitHub Actions CI run `35178788634`: passed after synchronization.
 - Real Testnet transactions broadcast in this release: **eight** — two identity
   registrations and six ERC-8183 workflow transactions.
 
