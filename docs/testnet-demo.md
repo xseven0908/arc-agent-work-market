@@ -24,12 +24,23 @@ boundary.
 
 ## Prepare safely
 
-1. Create fresh Testnet-only client and provider wallets.
+1. Generate fresh Testnet-only client and provider wallets with the command below.
+   It creates an ignored `.env` with mode `600`, prints public addresses only, and
+   refuses to overwrite an existing file:
+
+   ```bash
+   npm run wallets:create:testnet
+   ```
+
 2. Fund them through an official Arc/Circle Testnet faucet. The client needs the
    ERC-20 USDC job amount; every signing account needs native USDC for gas.
-3. Copy `.env.example` to `.env`. Git ignores `.env` and local evidence files.
-4. Edit `.env` locally. Do not put secret values directly into command history.
-5. Leave `EXECUTE_TESTNET=false` and review the plan:
+3. Check both public balances without exposing their private keys:
+
+   ```bash
+   npm run wallets:check:testnet
+   ```
+
+4. Leave `EXECUTE_TESTNET=false` and review the plan:
 
 ```bash
 npm run demo:testnet

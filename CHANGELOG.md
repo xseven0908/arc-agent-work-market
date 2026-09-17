@@ -17,6 +17,39 @@ the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add a Circle Developer-Controlled Wallet adapter.
 - Publish a manually verified Arc Testnet evidence artifact.
 
+## [0.5.1] - 2026-09-17
+
+### Added
+
+- Safe `npm run wallets:create:testnet` bootstrap command that generates distinct
+  client and provider wallets, stores their keys only in an ignored local `.env`,
+  and prints public addresses only.
+- Read-only `npm run wallets:check:testnet` command for Arc chain verification and
+  native/ERC-20 USDC balance checks before any transaction is enabled.
+
+### Security
+
+- Wallet bootstrap creates `.env` with owner-only mode `600` and refuses to
+  overwrite an existing secrets file.
+- Newly generated execution configuration remains locked in plan-only mode with
+  `EXECUTE_TESTNET=false`.
+
+### Verification
+
+- TypeScript strict typecheck and build: passed locally.
+- Test suite: 25 tests across seven files, passed locally.
+- Generated local wallets were confirmed to use distinct public addresses, an
+  ignored secrets file, and owner-only file permissions.
+- Arc Testnet RPC chain and balance check: passed; both new wallets were unfunded.
+- GitHub Actions: pending synchronization.
+- Real Testnet transactions broadcast in this release: **none**.
+
+### Known limitations
+
+- The public Circle Faucet requires an interactive reCAPTCHA before funding.
+- The generated wallets cannot execute the workflow until both receive Testnet
+  USDC for gas and the client receives at least the configured job budget.
+
 ## [0.5.0] - 2026-09-17
 
 ### Added

@@ -10,7 +10,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Proof-backed AI agent jobs and reputation on Arc Testnet. Version 0.5 adds a public
-evidence format and independent verifier for the full ERC-8004 and ERC-8183 flow.
+evidence format, an independent verifier, and safe isolated-wallet bootstrap tools
+for the full ERC-8004 and ERC-8183 flow.
 
 The project combines ERC-8004 agent identity with ERC-8183 job settlement. Its
 core rule is deliberately stricter than a normal ratings database: **only a job
@@ -97,10 +98,13 @@ dashboard.
 The command is safe by default and only prints a transaction plan:
 
 ```bash
+npm run wallets:create:testnet
+npm run wallets:check:testnet
 npm run demo:testnet
 ```
 
-Copy `.env.example` to the ignored `.env` file and review
+The first command creates an ignored owner-only `.env` and refuses to overwrite an
+existing file; its output contains public addresses only. Review
 [the Testnet runbook](docs/testnet-demo.md) before enabling execution. No write is
 attempted unless `EXECUTE_TESTNET=true` is explicitly set. Private keys are never
 written to the evidence artifact or logged by the script.
